@@ -1,0 +1,75 @@
+.container-fluid {
+  padding: 5px 0;
+}
+
+.path-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.open {
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.path {
+  font-size: 12pt;
+  background-color: #FFF2CC;
+  border-color: #D6B656;
+  border-width: 5px;
+  border-radius: 5px;
+  padding: 8px;
+  flex: 1;
+  display: inline-block;
+}
+
+#file_targets {
+  height: 30vh;
+  overflow-y: scroll;
+  display: block;
+}
+
+#file_targets th {
+  padding: 2px;
+}
+
+#file_targets td {
+  padding: 2px;
+}
+
+.table {
+  font-size: 8pt;
+}
+
+.spantext {
+  flex: 1;
+  display: inline-block;
+}
+
+.entry-item {
+  display: flex;
+  flex-direction: row;
+}
+
+.entry-item button {
+  margin-right: 5px;
+  font-size: 10pt;
+}
+
+.button-bar {
+  padding-bottom: 10px;
+}
+
+#pattern_targets {
+  height: 30vh;
+  overflow-y: scroll;
+  display: block;
+}
+
+#pattern_targets th {
+  padding: 2px;
+}
+
+#pattern_targets td {
+  padding: 2px;
+}
