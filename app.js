@@ -1,4 +1,4 @@
-const {dialog} = require('electron').remote;
+const {app, dialog} = require('electron').remote;
 const fs = require('fs');
 
 function find_target(filename) {
@@ -218,7 +218,7 @@ function update_file_table() {
 
 function read_rules() {
   try {
-    data = fs.readFileSync("rules.json");
+    data = fs.readFileSync(`${app.getPath("userData")}/rules.json`);
     obj = JSON.parse(data);
     if(!obj.ignores) {
       obj.ignores = [];
@@ -233,7 +233,7 @@ function read_rules() {
 }
 
 function save_rules() {
-  fs.writeFileSync("rules.json", JSON.stringify(rules, null, 2));
+  fs.writeFileSync(`${app.getPath("userData")}/rules.json`, JSON.stringify(rules, null, 2));
 }
 
 function pattern_target_entry_change(event) {
