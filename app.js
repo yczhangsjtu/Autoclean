@@ -5,7 +5,7 @@ function find_target(filename) {
   for(var i = 0; i < rules.rules.length; i++) {
     var rule = rules.rules[i];
     try {
-      if(filename.match(new RegExp(`^${rule.pattern}$`))) {
+      if(filename.match(new RegExp(`^${rule.pattern}\$`))) {
         let fullpath = `${selected_path}/${filename}`;
         if(rule.division == "size") {
           if(!fs.statSync(fullpath).isDirectory()) {
@@ -48,6 +48,18 @@ function update_file_table_data() {
   file_table_data = [];
   files = fs.readdirSync(selected_path);
   for (var i = 0; i < files.length; i++) {
+    ignored = false;
+    for(var j = 0; j < rules.ignores.length; j++) {
+      try {
+        if(files[i].match(new RegExp(`^${rules.ignores[j]}\$`))) {
+          ignored = true;
+          break;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    if(ignored) continue;
     file_table_data.push(
       {
         "file": files[i],
@@ -300,7 +312,7 @@ function down_button_click(event) {
   tmp = rules.rules[index+1];
   rules.rules[index+1] = rules.rules[index];
   rules.rules[index] = tmp;
-  // save_rules();
+  save_rules();
   update_rules();
   update_file_table_data();
   update_file_table();
@@ -347,7 +359,7 @@ async function update_rules() {
     row = $("<tr>");
 
     pattern_col = $("<td>");
-    pattern_entry = $("<input type='text'>").css("width", "30vw")
+    pattern_entry = $("<input type='text'>").css("width", "25vw")
       .attr("index", i)
       .attr("entry_type", "pattern");
     pattern_entry.val(rule.pattern);
@@ -360,7 +372,7 @@ async function update_rules() {
     }
 
     target_col = $("<td>");
-    target_entry = $("<input type='text'>").css("width", "30vw")
+    target_entry = $("<input type='text'>").css("width", "40vw")
       .attr("index", i)
       .attr("entry_type", "target");
     target_entry.val(rule.target);
@@ -434,6 +446,63 @@ async function update_rules() {
   }
 }
 
+function ignore_entry_change(event) {
+  entry = $(event.currentTarget);
+  index = parseInt(entry.attr("index"));
+  entry.css("background-color", "");
+  if(index < rules.ignores.length) {
+    if(entry.val().length > 0) {
+      rules.ignores[index] = entry.val();
+      try {
+        RegExp(entry.val());
+      } catch (e) {
+        entry.css("background-color", "red");
+      }
+    } else {
+      rules.ignores.splice(index, 1);
+      update_ignores();
+    }
+    save_rules();
+    update_file_table_data();
+    update_file_table();
+  } else {
+    if(entry.val().length > 0) {
+      rules.ignores.push(entry.val());
+      save_rules();
+      update_file_table_data();
+      update_file_table();
+      update_ignores();
+    }
+  }
+}
+
+async function update_ignores() {
+  table = $("#ignore_table");
+  table.html("");
+  for (var i = 0; i <= rules.ignores.length; i++) {
+    row = $("<tr>");
+
+    pattern = i < rules.ignores.length
+      ? rules.ignores[i]
+      : "";
+
+    pattern_col = $("<td>");
+    pattern_entry = $("<input type='text'>").css("width", "50vw")
+      .attr("index", i);
+    pattern_entry.val(pattern);
+    pattern_entry.change(ignore_entry_change);
+    pattern_col.html(pattern_entry);
+    try {
+      RegExp(pattern);
+    } catch (e) {
+      pattern_entry.css("background-color", "red");
+    }
+
+    row.append(pattern_col);
+    table.append(row);
+  }
+}
+
 file_table_data = []
 
 rules = {
@@ -443,6 +512,7 @@ rules = {
 
 read_rules();
 update_rules();
+update_ignores();
 
 set_path(`${process.env.HOME}/Downloads`);
 

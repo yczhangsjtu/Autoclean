@@ -7,8 +7,11 @@
   flex-direction: row;
 }
 
-.open {
+button.open {
   margin-right: 5px;
+  font-size: 12pt;
+  padding: 2px;
+  height: 30px;
 }
 
 .refresh {
@@ -19,11 +22,14 @@
   font-size: 12pt;
   background-color: #FFF2CC;
   border-color: #D6B656;
+  outline-color: #D6B656;
+  outline-width: 2px;
   border-width: 5px;
   border-radius: 5px;
-  padding: 8px;
   flex: 1;
   display: inline-block;
+  padding: 2px;
+  height: 30px;
 }
 
 #file_targets {
@@ -69,6 +75,12 @@
   margin-left: 5px;
 }
 
+.button-bar button {
+  font-size: 12pt;
+  padding: 2px;
+  height: 30px;
+}
+
 #pattern_targets {
   height: 30vh;
   overflow-y: scroll;
@@ -80,5 +92,19 @@
 }
 
 #pattern_targets td {
+  padding: 2px;
+}
+
+#ignores {
+  height: 20vh;
+  overflow-y: scroll;
+  display: block;
+}
+
+#ignores th {
+  padding: 2px;
+}
+
+#ignores td {
   padding: 2px;
 }
