@@ -57,7 +57,13 @@
 }
 
 .button-bar {
+  display: flex;
+  flex-direction: row;
   padding-bottom: 10px;
+}
+
+.button-bar :not(:first-child) {
+  margin-left: 5px;
 }
 
 #pattern_targets {
