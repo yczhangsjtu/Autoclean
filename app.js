@@ -5,7 +5,35 @@ function find_target(filename) {
   for(var i = rules.rules.length-1; i >= 0; i--) {
     var rule = rules.rules[i];
     try {
-      if(filename.match(new RegExp(rule.pattern))) {
+      if(filename.match(new RegExp(`^${rule.pattern}$`))) {
+        let fullpath = `${selected_path}/${filename}`;
+        if(rule.division == "size") {
+          if(!fs.statSync(fullpath).isDirectory()) {
+            var size_in_bytes = fs.statSync(fullpath).size;
+            // Less than 1M: Tiny
+            if(size_in_bytes < 1024 * 1024) {
+              return `${rule.target}/Tiny`;
+            }
+            // Less than 10M: Small
+            if(size_in_bytes < 10 * 1024 * 1024) {
+              return `${rule.target}/Small`;
+            }
+            // Less than 50M: Normal
+            if(size_in_bytes < 50 * 1024 * 1024) {
+              return `${rule.target}/Normal`;
+            }
+            // Less than 200M: Big
+            if(size_in_bytes < 200 * 1024 * 1024) {
+              return `${rule.target}/Big`;
+            }
+            // Less than 1G: Large
+            if(size_in_bytes < 200 * 1024 * 1024) {
+              return `${rule.target}/Large`;
+            }
+            // More than 1G: Huge
+            return `${rule.target}/Huge`;
+          }
+        }
         return rule.target;
       }
     } catch (e) {
@@ -16,6 +44,7 @@ function find_target(filename) {
 }
 
 function update_file_table_data() {
+  to_renames = {}
   file_table_data = [];
   files = fs.readdirSync(selected_path);
   for (var i = 0; i < files.length; i++) {
@@ -35,30 +64,50 @@ function set_path(p) {
   update_file_table();
 }
 
+to_renames = {}
+
 function file_entry_onchange(event) {
   entry = $(event.target);
   index = entry.attr("index");
   if(entry.val() != file_table_data[index].file) {
-    entry.css("border-color", "red");
+    entry.css("background-color", "red");
+    if(entry.val().length > 0) {
+      to_renames[file_table_data[index].file] = entry.val();
+    } else {
+      delete to_renames[file_table_data[index].file];
+    }
   } else {
-    entry.css("border-color", "");
+    entry.css("background-color", "");
+    delete to_renames[file_table_data[index].file];
   }
 }
 
 function targets_entry_onchange(event) {
-
+  entry = $(event.target);
+  index = entry.attr("index");
+  if(!fs.existsSync(entry.val())) {
+    entry.css("background-color", "red");
+  } else if(entry.val() != file_table_data[index].target) {
+    entry.css("background-color", "lightgreen");
+  } else {
+    entry.css("background-color", "");
+  }
 }
 
 function move_button_click(event) {
   button = $(event.target);
   index = button.attr("index");
   target = file_table_data[index].target;
-  console.log(`${index} ${target}`)
+
   if(target == "") {
     return;
   }
 
   filename = file_table_data[index].file;
+  if(filename == "") {
+    return;
+  }
+
   fullpath = `${selected_path}/${filename}`;
 
   if(!fs.existsSync(fullpath)) {
@@ -94,6 +143,7 @@ function move_button_click(event) {
 }
 
 function update_file_table() {
+  to_renames = {}
   table = $("#file_table");
   table.html("");
   for (var i = 0; i < file_table_data.length; i++) {
@@ -116,8 +166,21 @@ function update_file_table() {
       .css("font-size", 8)
       .attr("index", i);
 
-    file_entry.change(file_entry_onchange);
-    target_entry.change(targets_entry_onchange);
+    if(file_table_data[i].file != "") {
+      if(!fs.existsSync(`${selected_path}/${file_table_data[i].file}`)) {
+        file_entry.css("background-color", "red");
+      }
+    }
+
+    if(file_table_data[i].target != "") {
+      if(!fs.existsSync(file_table_data[i].target) ||
+         !fs.statSync(file_table_data[i].target).isDirectory()) {
+        target_entry.css("background-color", "red");
+      }
+    }
+
+    file_entry.on('input', file_entry_onchange);
+    target_entry.on('input', targets_entry_onchange);
     move_button.click(move_button_click);
 
     file_col.html(file_entry);
@@ -175,6 +238,12 @@ function pattern_target_entry_change(event) {
   } else {
     if(entry_type == "pattern") {
       rules.rules[index].pattern = entry.val();
+      entry.css("background-color", "none");
+      try {
+        RegExp(entry.val());
+      } catch (e) {
+        entry.css("background-color", "red");
+      }
     } else {
       rules.rules[index].target = entry.val();
     }
@@ -189,6 +258,15 @@ function pattern_target_entry_change(event) {
   }
 }
 
+function division_select_change(event) {
+  let entry = $(event.target);
+  let index = entry.attr("index");
+  rules.rules[index].division = entry.val();
+  save_rules();
+  update_file_table_data();
+  update_file_table();
+}
+
 async function update_rules() {
   table = $("#rule_table");
   table.html("");
@@ -196,23 +274,44 @@ async function update_rules() {
     rule = i < rules.rules.length
       ? rules.rules[i]
       : {pattern: "", target: ""};
+
     row = $("<tr>");
+
     pattern_col = $("<td>");
-    target_col = $("<td>");
     pattern_entry = $("<input type='text'>").css("width", "40vw")
       .attr("index", i)
       .attr("entry_type", "pattern");
     pattern_entry.val(rule.pattern);
+    pattern_entry.change(pattern_target_entry_change);
     pattern_col.html(pattern_entry);
+    try {
+      RegExp(rule.pattern);
+    } catch (e) {
+      pattern_entry.css("background-color", "red");
+    }
+
+    target_col = $("<td>");
     target_entry = $("<input type='text'>").css("width", "40vw")
       .attr("index", i)
       .attr("entry_type", "target");
     target_entry.val(rule.target);
     target_col.html(target_entry);
-    pattern_entry.change(pattern_target_entry_change);
     target_entry.change(pattern_target_entry_change);
+
     row.append(pattern_col);
     row.append(target_col);
+
+    if(i < rules.rules.length) {
+      division_col = $("<td>");
+      division_select = $("<select>").attr("index", i);
+      division_select.append($("<option value='none'>").html("None"))
+      division_select.append($("<option value='size'>").html("Size"))
+      division_select.val(rule.division ? rule.division : "none");
+      division_select.change(division_select_change);
+      division_col.html(division_select);
+      row.append(division_col);
+    }
+
     table.append(row);
   }
 }
@@ -225,7 +324,6 @@ rules = {
 }
 
 read_rules();
-console.log(rules);
 update_rules();
 
 set_path(`${process.env.HOME}/Downloads`);
@@ -234,9 +332,32 @@ $(".open").click(async (event) => {
   dir = await dialog.showOpenDialog({
     properties: ["openDirectory"],
   });
-  console.log(dir.canceled);
-  console.log(dir.filePaths);
   if(!dir.canceled && dir.filePaths.length > 0) {
     set_path(dir.filePaths[0]);
   }
 });
+
+$(".refresh").click(async (event) => {
+  update_file_table_data();
+  update_file_table();
+})
+
+$("#renameall").click(async (event) => {
+  console.log(to_renames);
+  for (var filename in to_renames) {
+    if(filename.length > 0) {
+      target_name = to_renames[filename];
+      from = `${selected_path}/${filename}`;
+      to = `${selected_path}/${target_name}`;
+      if(fs.existsSync(from) && target_name && !fs.existsSync(to)) {
+        await new Promise((resolve) => {
+          fs.rename(from, to, () => {
+            resolve();
+          })
+        });
+      }
+    }
+  }
+  update_file_table_data();
+  update_file_table();
+})

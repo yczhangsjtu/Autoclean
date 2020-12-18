@@ -18,6 +18,7 @@
     <div class="row">
       <div class="path-container">
         <button type="button" class="btn btn-primary open">Open</button>
+        <button type="button" class="btn btn-primary refresh">Refresh</button>
         <span class="path"></span>
       </div>
     </div>
@@ -36,9 +37,7 @@
     <div class="row">
       <div class="button-bar">
         <button type="button" class="btn btn-primary button-bar-item">Move All</button>
-        <button type="button" class="btn btn-primary button-bar-item">Rename</button>
-        <button type="button" class="btn btn-primary button-bar-item">Add Label</button>
-        <input type="text" class="spantext button-bar-item">
+        <button type="button" class="btn btn-primary button-bar-item" id="renameall">Rename All</button>
       </div>
     </div>
     <div class="row">
@@ -50,6 +49,7 @@
           <tr>
             <th scope="col">Pattern</th>
             <th scope="col">Target</th>
+            <th scope="col">Division</th>
           </tr>
         </thead>
         <tbody id="rule_table">
