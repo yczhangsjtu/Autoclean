@@ -118,8 +118,15 @@ function move_button_click(event) {
   }
 
   if(!fs.existsSync(target)) {
-    alert("Target directory does not exist!");
-    return;
+    if(confirm("Target directory does not exist! Make directory?")) {
+      fs.mkdirSync(target, {recursive: true});
+      if(!fs.existsSync(target)) {
+        alert("Failed to create directory!")
+        return;
+      }
+    } else {
+      return;
+    }
   }
 
   if(!fs.statSync(target).isDirectory()) {
