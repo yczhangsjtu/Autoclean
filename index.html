@@ -34,43 +34,71 @@
         </tbody>
       </table>
     </div>
+
     <div class="row">
       <div class="button-bar">
         <button type="button" class="btn btn-warning button-bar-item" id="renameall">Rename All</button>
         <button type="button" class="btn btn-info button-bar-item" id="reset">Reset</button>
+        <button type="button" class="btn btn-success button-bar-item" id="openrules">Rules</button>
+        <button type="button" class="btn btn-outline-secondary button-bar-item" id="openignores">Ignores</button>
       </div>
     </div>
-    <div class="row">
-      <h4>Rules</h4>
-    </div>
-    <div class="row">
-      <table class="table" id="pattern_targets">
-        <thead>
-          <tr>
-            <th scope="col">Pattern</th>
-            <th scope="col">Target</th>
-            <th scope="col">Division</th>
-          </tr>
-        </thead>
-        <tbody id="rule_table">
-        </tbody>
-      </table>
-    </div>
-    <div class="row">
-      <h4>Ignores</h4>
-    </div>
-    <div class="row">
-      <table class="table" id="ignores">
-        <thead>
-          <tr>
-            <th scope="col">Patterns</th>
-          </tr>
-        </thead>
-        <tbody id="ignore_table">
-        </tbody>
-      </table>
+  </div>
+
+  <div class="tablemodal" id="rulesmodal" hidden>
+    <div class="tablemodalcontent">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title">
+            <h4>Rules</h4>
+          </div>
+        </div>
+        <div class="modal-body">
+          <table class="table" id="pattern_targets">
+            <thead>
+              <tr>
+                <th scope="col">Pattern</th>
+                <th scope="col">Target</th>
+                <th scope="col">Division</th>
+              </tr>
+            </thead>
+            <tbody id="rule_table">
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary closemodal">Close</button>
+        </div>
+      </div>
     </div>
   </div>
+
+  <div class="tablemodal" id="ignoresmodal" hidden>
+    <div class="tablemodalcontent">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title">
+            <h4>Ignores</h4>
+          </div>
+        </div>
+        <div class="modal-body">
+          <table class="table" id="ignores">
+            <thead>
+              <tr>
+                <th scope="col">Patterns</th>
+              </tr>
+            </thead>
+            <tbody id="ignore_table">
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary closemodal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="app.js" type="text/javascript"></script>
 </body>
 </html>

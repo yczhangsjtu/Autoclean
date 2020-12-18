@@ -33,7 +33,7 @@ button.open {
 }
 
 #file_targets {
-  height: 30vh;
+  height: 82vh;
   overflow-y: scroll;
   display: block;
 }
@@ -82,7 +82,7 @@ button.open {
 }
 
 #pattern_targets {
-  height: 30vh;
+  height: 50vh;
   overflow-y: scroll;
   display: block;
 }
@@ -96,7 +96,7 @@ button.open {
 }
 
 #ignores {
-  height: 20vh;
+  height: 50vh;
   overflow-y: scroll;
   display: block;
 }
@@ -107,4 +107,23 @@ button.open {
 
 #ignores td {
   padding: 2px;
+}
+
+.tablemodal {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  top: 0;
+  height: 100%;
+  z-index: 1000;
+  background-color: rgba(0,0,0,0.4);
+}
+
+#ignoresmodal {
+  z-index: 1001;
+}
+
+.tablemodalcontent {
+  margin: 5% auto; /* 15% from the top and centered */
+  border: 1px solid #888;
 }

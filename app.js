@@ -487,7 +487,7 @@ async function update_ignores() {
       : "";
 
     pattern_col = $("<td>");
-    pattern_entry = $("<input type='text'>").css("width", "50vw")
+    pattern_entry = $("<input type='text'>").css("width", "80vw")
       .attr("index", i);
     pattern_entry.val(pattern);
     pattern_entry.change(ignore_entry_change);
@@ -548,4 +548,32 @@ $("#renameall").click(async (event) => {
 $("#reset").click(async (event) => {
   update_file_table_data();
   update_file_table();
+})
+
+$("#openrules").click(async (event) => {
+  $("#rulesmodal").prop("hidden", false);
+})
+
+$("#rulesmodal .closemodal").click(async (event) => {
+  $("#rulesmodal").prop("hidden", true);
+})
+
+$("#rulesmodal").click(async (event) => {
+  if(event.target.id == "rulesmodal") {
+    $("#rulesmodal").prop("hidden", true);
+  }
+})
+
+$("#openignores").click(async (event) => {
+  $("#ignoresmodal").prop("hidden", false);
+})
+
+$("#ignoresmodal .closemodal").click(async (event) => {
+  $("#ignoresmodal").prop("hidden", true);
+})
+
+$("#ignoresmodal").click(async (event) => {
+  if(event.target.id == "ignoresmodal") {
+    $("#ignoresmodal").prop("hidden", true);
+  }
 })
