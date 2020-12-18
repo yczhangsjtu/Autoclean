@@ -1,10 +1,28 @@
-.container-fluid {
-  padding: 5px 0;
+.mainpage {
+  padding: 5px;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.mainheader {
+
+}
+
+.mainbody {
+  flex: 1;
+  overflow: scroll;
+}
+
+.mainfooter {
+
 }
 
 .path-container {
   display: flex;
   flex-direction: row;
+  padding: 5px 0;
 }
 
 button.open {
@@ -30,12 +48,6 @@ button.open {
   display: inline-block;
   padding: 2px;
   height: 30px;
-}
-
-#file_targets {
-  height: 82vh;
-  overflow-y: scroll;
-  display: block;
 }
 
 #file_targets th {
@@ -68,7 +80,7 @@ button.open {
 .button-bar {
   display: flex;
   flex-direction: row;
-  padding-bottom: 10px;
+  padding: 5px 0;
 }
 
 .button-bar :not(:first-child) {

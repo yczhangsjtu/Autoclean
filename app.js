@@ -175,11 +175,11 @@ function update_file_table() {
 
     file_entry = $("<input type='text'>")
       .val(file_table_data[i].file)
-      .css("width", "40vw")
+      .css("width", "100%")
       .attr("index", i);
     target_entry = $("<input type='text'>")
       .val(file_table_data[i].target)
-      .css("width", "40vw")
+      .css("width", "100%")
       .attr("index", i);
     move_button = $("<button type='button' class='btn btn-primary'>")
       .html("Move")
