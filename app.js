@@ -2,7 +2,7 @@ const {dialog} = require('electron').remote;
 const fs = require('fs');
 
 function find_target(filename) {
-  for(var i = rules.rules.length-1; i >= 0; i--) {
+  for(var i = 0; i < rules.rules.length; i++) {
     var rule = rules.rules[i];
     try {
       if(filename.match(new RegExp(`^${rule.pattern}$`))) {
@@ -68,7 +68,7 @@ to_renames = {}
 
 function file_entry_onchange(event) {
   entry = $(event.target);
-  index = entry.attr("index");
+  index = parseInt(entry.attr("index"));
   if(entry.val() != file_table_data[index].file) {
     entry.css("background-color", "red");
     if(entry.val().length > 0) {
@@ -84,7 +84,7 @@ function file_entry_onchange(event) {
 
 function targets_entry_onchange(event) {
   entry = $(event.target);
-  index = entry.attr("index");
+  index = parseInt(entry.attr("index"));
   file_table_data[index].target = entry.val();
 
   if(!fs.existsSync(entry.val())) {
@@ -98,7 +98,7 @@ function targets_entry_onchange(event) {
 
 function move_button_click(event) {
   button = $(event.target);
-  index = button.attr("index");
+  index = parseInt(button.attr("index"));
   target = file_table_data[index].target;
 
   if(target == "") {
@@ -226,7 +226,7 @@ function save_rules() {
 
 function pattern_target_entry_change(event) {
   let entry = $(event.target);
-  let index = entry.attr("index");
+  let index = parseInt(entry.attr("index"));
   let entry_type = entry.attr("entry_type");
   if(index == rules.rules.length) {
     if(entry.val().length > 0) {
@@ -269,9 +269,69 @@ function pattern_target_entry_change(event) {
 
 function division_select_change(event) {
   let entry = $(event.target);
-  let index = entry.attr("index");
+  let index = parseInt(entry.attr("index"));
   rules.rules[index].division = entry.val();
   save_rules();
+  update_file_table_data();
+  update_file_table();
+}
+
+function up_button_click(event) {
+  let button = $(event.currentTarget);
+  let index = parseInt(button.attr("index"));
+  if(index <= 0) {
+    return;
+  }
+  tmp = rules.rules[index-1];
+  rules.rules[index-1] = rules.rules[index];
+  rules.rules[index] = tmp;
+  save_rules();
+  update_rules();
+  update_file_table_data();
+  update_file_table();
+}
+
+function down_button_click(event) {
+  let button = $(event.currentTarget);
+  let index = parseInt(button.attr("index"));
+  if(index >= rules.rules.length - 1) {
+    return;
+  }
+  tmp = rules.rules[index+1];
+  rules.rules[index+1] = rules.rules[index];
+  rules.rules[index] = tmp;
+  // save_rules();
+  update_rules();
+  update_file_table_data();
+  update_file_table();
+}
+
+function top_button_click(event) {
+  let button = $(event.currentTarget);
+  let index = parseInt(button.attr("index"));
+  if(index <= 0) {
+    return;
+  }
+  tmp = rules.rules[0];
+  rules.rules[0] = rules.rules[index];
+  rules.rules[index] = tmp;
+  save_rules();
+  update_rules();
+  update_file_table_data();
+  update_file_table();
+}
+
+function bottom_button_click(event) {
+  let button = $(event.currentTarget);
+  let index = parseInt(button.attr("index"));
+  if(index >= rules.rules.length - 1) {
+    return;
+  }
+  tmp = rules.rules[rules.rules.length - 1];
+  rules.rules[rules.rules.length - 1] = rules.rules[index];
+  rules.rules[index] = tmp;
+  save_rules();
+  update_rules();
   update_file_table_data();
   update_file_table();
 }
@@ -287,7 +347,7 @@ async function update_rules() {
     row = $("<tr>");
 
     pattern_col = $("<td>");
-    pattern_entry = $("<input type='text'>").css("width", "40vw")
+    pattern_entry = $("<input type='text'>").css("width", "30vw")
       .attr("index", i)
       .attr("entry_type", "pattern");
     pattern_entry.val(rule.pattern);
@@ -300,7 +360,7 @@ async function update_rules() {
     }
 
     target_col = $("<td>");
-    target_entry = $("<input type='text'>").css("width", "40vw")
+    target_entry = $("<input type='text'>").css("width", "30vw")
       .attr("index", i)
       .attr("entry_type", "target");
     target_entry.val(rule.target);
@@ -319,6 +379,55 @@ async function update_rules() {
       division_select.change(division_select_change);
       division_col.html(division_select);
       row.append(division_col);
+
+      up_col = $("<td>");
+      up_button = $("<button class='btn btn-outline-primary'>")
+        .html("<i class='fa fa-angle-up'></i>")
+        .attr("index", i)
+        .css("padding", "2px 5px")
+        .css("font-size", 10)
+        .click(up_button_click);
+      up_col.html(up_button);
+
+      down_col = $("<td>");
+      down_button = $("<button class='btn btn-outline-primary'>")
+        .html("<i class='fa fa-angle-down'></i>")
+        .attr("index", i)
+        .css("padding", "2px 5px")
+        .css("font-size", 10)
+        .click(down_button_click);
+      down_col.html(down_button);
+
+      top_col = $("<td>");
+      top_button = $("<button class='btn btn-outline-primary'>")
+        .html("<i class='fa fa-angle-double-up'></i>")
+        .attr("index", i)
+        .css("padding", "2px 5px")
+        .css("font-size", 10)
+        .click(top_button_click);
+      top_col.html(top_button);
+
+      bottom_col = $("<td>");
+      bottom_button = $("<button class='btn btn-outline-primary'>")
+        .html("<i class='fa fa-angle-double-down'></i>")
+        .attr("index", i)
+        .css("padding", "2px 5px")
+        .css("font-size", 10)
+        .click(bottom_button_click);
+      bottom_col.html(bottom_button);
+
+      if(i == 0) {
+        up_button.prop("disabled", true);
+        top_button.prop("disabled", true);
+      } else if(i == rules.rules.length - 1) {
+        down_button.prop("disabled", true);
+        bottom_button.prop("disabled", true);
+      }
+
+      row.append(top_col);
+      row.append(up_col);
+      row.append(down_col);
+      row.append(bottom_col);
     }
 
     table.append(row);
