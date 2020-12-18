@@ -85,9 +85,11 @@ function file_entry_onchange(event) {
 function targets_entry_onchange(event) {
   entry = $(event.target);
   index = entry.attr("index");
+  file_table_data[index].target = entry.val();
+
   if(!fs.existsSync(entry.val())) {
     entry.css("background-color", "red");
-  } else if(entry.val() != file_table_data[index].target) {
+  } else if(entry.val() != find_target(file_table_data[index].file)) {
     entry.css("background-color", "lightgreen");
   } else {
     entry.css("background-color", "");
@@ -337,11 +339,6 @@ $(".open").click(async (event) => {
   }
 });
 
-$(".refresh").click(async (event) => {
-  update_file_table_data();
-  update_file_table();
-})
-
 $("#renameall").click(async (event) => {
   console.log(to_renames);
   for (var filename in to_renames) {
@@ -358,6 +355,11 @@ $("#renameall").click(async (event) => {
       }
     }
   }
+  update_file_table_data();
+  update_file_table();
+})
+
+$("#reset").click(async (event) => {
   update_file_table_data();
   update_file_table();
 })
