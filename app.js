@@ -324,9 +324,9 @@ function top_button_click(event) {
   if(index <= 0) {
     return;
   }
-  tmp = rules.rules[0];
-  rules.rules[0] = rules.rules[index];
-  rules.rules[index] = tmp;
+  tmp = rules.rules[index];
+  rules.rules.splice(index, 1);
+  rules.rules.unshift(tmp);
   save_rules();
   update_rules();
   update_file_table_data();
@@ -339,9 +339,9 @@ function bottom_button_click(event) {
   if(index >= rules.rules.length - 1) {
     return;
   }
-  tmp = rules.rules[rules.rules.length - 1];
-  rules.rules[rules.rules.length - 1] = rules.rules[index];
-  rules.rules[index] = tmp;
+  tmp = rules.rules[index];
+  rules.rules.splice(index, 1);
+  rules.rules.push(tmp);
   save_rules();
   update_rules();
   update_file_table_data();
