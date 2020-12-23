@@ -27,7 +27,7 @@ function find_target(filename) {
               return `${rule.target}/Big`;
             }
             // Less than 1G: Large
-            if(size_in_bytes < 200 * 1024 * 1024) {
+            if(size_in_bytes < 1024 * 1024 * 1024) {
               return `${rule.target}/Large`;
             }
             // More than 1G: Huge
